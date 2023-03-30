@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- <h5 class="card-title">肉蛋奶产品逐年产量（全国基准）</h5>-->
+                        <!-- Line Chart -->
+                        <div id="lineLeft" style="min-height: 400px;" class="echart"></div>
+    
+                    </div>
+                </div>
+            </div>
+    
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- <h5 class="card-title">Area Chart</h5> -->
+    
+                        <!-- Area Chart -->
+                        <div id="pieRight" style="min-height: 400px;" class="echart"></div>
+    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var myLineLeft = echarts.init(document.getElementById("lineLeft")) // 初始化echarts实例对象
+        var xDataArr = ['2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'] // 准备x轴数据
+        var yDatameat = [6938.87, 7099.85, 6916.40, 7370.88, 7706.67, 7993.61, 8022.98, 8471.10, 8632.77, 8817.90, 8749.52, 8628.33, 8654.43, 8624.63, 7758.78, 7748.38]
+        var yDataegg = [2438.12, 2424.00, 2546.70, 2699.62, 2751.88, 2776.88, 2830.36, 2885.39, 2905.55, 2930.31, 3046.13, 3160.54, 3096.29, 3128.28, 3308.98, 3467.76]
+        var yDatamilk = [2864.83, 3051.62, 3055.23, 3236.20, 3153.93, 3211.27, 3262.77, 3306.69, 3118.91, 3276.45, 3295.47, 3173.93, 3148.58, 3176.79, 3297.60, 3529.56]
+
+        var pieCharData =
+        {
+            "2005": [{ "value": 2753.37, "name": "牛奶" }, { "value": 111.45, "name": "其他" }],
+            "2006": [{ "value": 2944.62, "name": "牛奶" }, { "value": 107, "name": "其他" }],
+            "2007": [{ "value": 2947.09, "name": "牛奶" }, { "value": 108.13, "name": "其他" }],
+            "2008": [{ "value": 3010.57, "name": "牛奶" }, { "value": 225.63, "name": "其他" }],
+            "2009": [{ "value": 2995.13, "name": "牛奶" }, { "value": 158.8, "name": "其他" }],
+            "2010": [{ "value": 3038.93, "name": "牛奶" }, { "value": 172.34, "name": "其他" }],
+            "2011": [{ "value": 3109.93, "name": "牛奶" }, { "value": 152.84, "name": "其他" }],
+            "2012": [{ "value": 3174.93, "name": "牛奶" }, { "value": 131.77, "name": "其他" }],
+            "2013": [{ "value": 3000.82, "name": "牛奶" }, { "value": 118.09, "name": "其他" }],
+            "2014": [{ "value": 3159.88, "name": "牛奶" }, { "value": 116.57, "name": "其他" }],
+            "2015": [{ "value": 3179.83, "name": "牛奶" }, { "value": 115.64, "name": "其他" }],
+            "2016": [{ "value": 3064.03, "name": "牛奶" }, { "value": 109.91, "name": "其他" }],
+            "2017": [{ "value": 3038.62, "name": "牛奶" }, { "value": 109.95, "name": "其他" }],
+            "2018": [{ "value": 3074.56, "name": "牛奶" }, { "value": 102.22, "name": "其他" }],
+            "2019": [{ "value": 3201.24, "name": "牛奶" }, { "value": 96.36, "name": "其他" }],
+            "2020": [{ "value": 3440.14, "name": "牛奶" }, { "value": 89.42, "name": "其他" }]
+        };
+
+        var colr = ["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#9E0142", "#464646"]
+
+        var option1 = {
+            title: { // 标题设置
+                text: '肉蛋奶产品逐年产量（全国基准）', // 标题文字
+            },
+            xAxis: {
+                type: 'category',
+                data: xDataArr,
+                boundaryGap: false // x轴的第1个元素是否与y轴有距离，默认true有距离
+                //position: 'top' // 控制坐标轴的位置
+            },
+            yAxis: {
+                type: 'value'
+                //scale: true //数值轴的数据不从0开始，相当于缩放
+                //position: 'right' // 控制坐标轴的位置
+            },
+            series:
+                [
+                    {
+                        name: '肉类',
+                        data: yDatameat,
+
+                        type: 'line',
+                        smooth: true, // 是否为平滑线
+                        lineStyle: { // 线的样式设置
+                            color: 'red',
+
+                        },
+                        areaStyle: { color: 'pink' },// 线和x轴形成的区域设置
+                        label: { // 柱状图上的文字设置
+                            show: false, // 是否显示
+                            //rotate: 60, // 旋转角度
+                            position: 'top' // 显示位置
+                        },
+                    },
+                    {
+                        name: '蛋类',
+                        data: yDataegg,
+                        //stack:'all',//堆叠图的设置
+                        type: 'line',
+
+                        smooth: true, // 是否为平滑线
+                        lineStyle: { // 线的样式设置
+                            color: 'darkgreen',
+                            //type: 'dashed' // dashed dotted solid
+                        },
+                        areaStyle: { color: 'green' },// 线和x轴形成的区域设置
+                        label: { // 柱状图上的文字设置
+                            show: false, // 是否显示
+                            position: 'top' // 显示位置
+                        },
+                    },
+                    {
+                        name: '奶类',
+                        data: yDatamilk,
+
+                        type: 'line',
+                        smooth: true, // 是否为平滑线
+                        lineStyle: { // 线的样式设置
+                            color: 'darkblue',
+                            //type: 'dashed' // dashed dotted solid
+                        },
+                        areaStyle: { color: 'lightblue' },// 线和x轴形成的区域设置
+                        label: { // 柱状图上的文字设置
+                            show: false, // 是否显示
+                            position: 'top' // 显示位置
+                        },
+                    }
+                ],
+            tooltip: {
+                trigger: 'axis',
+            },
+            legend: { // 图例, 图例中的data数据来源于series中每个对象的name, 
+                //图例可以帮助我们对图表进行筛选
+                //orient : 'vertical',    // 垂直显示
+                x: "right",
+                y: "top",
+                padding:[10,50,0,20],//上，右，下，左
+                data: [
+                    { name: '肉类' },
+                    { name: '蛋类' },
+                    { name: '奶类' }
+                ]
+            },
+            calculable: true,
+            toolbox: {
+                orient : 'vertical', 
+                feature: {
+                    saveAsImage: {}, // 导出图片
+                    dataView: {}, // 数据视图
+                    restore: {}, // 重置
+                    dataZoom: {}, // 区域缩放
+                    magicType: {
+                        type: ['bar', 'line']
+                    } // 动态图表类型的切换
+                }
+            },
+            grid: { // 坐标轴容器
+                show: true, // 是否可见
+            },
+            emphasis: {
+                show: true
+            }
+        }
+
+        myLineLeft.setOption(option1)
+        myLineLeft.on('mouseover', params => { // 点击每个图形触发的事件，params里面含有该条数据的各个属性
+            //console.log(params)
+            drawPieRight(params.name)
+        });
+
+        var allRightData;
+        allRightData = pieCharData;
+        drawPieRight('2005');
+
+
+        function drawPieRight(name) {
+            var queryData = allRightData[name]
+            var titleText = `${name}奶类构成`
+            var myPieLeft = echarts.init(document.getElementById("pieRight")) // 初始化echarts实例对象
+
+            var option2 = {
+                title: { // 标题设置
+                    text: titleText, // 标题文字
+                    //left: '2%'
+
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}:{d}%'
+                },
+                legend: {
+                    show: false
+                },
+                toolbox: {
+                    orient : 'vertical', 
+                    feature: {
+                        saveAsImage: {}, // 导出图片
+                        dataView: {}, // 数据视图
+                        restore: {}, // 重置
+                        dataZoom: {}, // 区域缩放
+                        magicType: {
+                            type: ['bar', 'line']
+                        } // 动态图表类型的切换
+                    }
+                },
+                calculable: true,
+                series: [
+                    {
+                        name: '',
+                        type: 'pie',
+                        //roseType: 'radius', // 把饼图变成南丁格尔图
+                        radius: [30, 80], // 设置成圆环
+                        center: ['50%', '45%'],
+                        // color: [
+                        //     '#42cccc',
+                        //     '#0080ff',
+                        //     '#27ae61',
+                        //     '#f6a0bb',
+                        //     '#e6bb0e',
+                        //     '#288add'
+                        // ], // 颜色将根据饼图的区域个数循环
+                        label: {
+                            normal: {
+                                show: true
+                            }
+                        },
+
+                        data: queryData
+
+                    }
+                ],
+            }
+            myPieLeft.setOption(option2)
+        }
+
+    </script>
+</body>
+
+</html>

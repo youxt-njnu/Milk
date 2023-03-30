@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>covmap</title>
+  <script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+  <script src="../js/china.js"></script>
+  <link href="../css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-6">
+        <!-- <h6 style="text-align: center;">各省不同类型居民奶类人均消费(2018-2020)</h6> -->
+        <div id="heatmap" style="height: 600px;"></div>
+
+      </div>
+
+      <div class="col-lg-6">
+        <div class="row">
+          <div class="col-lg-4">
+            <div class="echart" style="min-height: 200px;" id="map1"></div>
+
+          </div>
+          <div class="col-lg-4">
+            <div class="echart" style="min-height: 200px;" id="map2"></div>
+
+          </div>
+          <div class="col-lg-4">
+            <div class="echart" style="min-height: 200px;" id="map3"></div>
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-4">
+            <div id="map4" style="min-height: 200px;" class="echart"></div>
+
+          </div>
+          <div class="col-lg-4">
+            <div class="echart" style="min-height: 200px;" id="map5"></div>
+
+          </div>
+          <div class="col-lg-4">
+            <div class="echart" style="min-height: 200px;" id="map6"></div>
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-4">
+            <div class="echart" style="min-height: 200px;" id="map7"></div>
+
+          </div>
+          <div class="col-lg-4">
+            <div class="echart" style="min-height: 200px;" id="map8"></div>
+
+          </div>
+          <div class="col-lg-4">
+            <div class="echart" style="min-height: 200px;" id="map9"></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+<script>
+  var colorgroup = ["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#9E0142", "#464646"];
+  var mapdata1, mapdata2, mapdata3, mapdata4, mapdata5, mapdata6, mapdata7, mapdata8, mapdata9 = [];
+  var option;
+
+  var myChart1 = echarts.init(document.getElementById('map1'));
+  var myChart2 = echarts.init(document.getElementById('map2'), null, {
+    renderer: 'canvas',
+    useDirtyRect: false
+  });
+  var myChart3 = echarts.init(document.getElementById('map3'), null, {
+    renderer: 'canvas',
+    useDirtyRect: false
+  });
+  var myChart4 = echarts.init(document.getElementById('map4'), null, {
+    renderer: 'canvas',
+    useDirtyRect: false
+  });
+  var myChart5 = echarts.init(document.getElementById('map5'), null, {
+    renderer: 'canvas',
+    useDirtyRect: false
+  });
+  var myChart6 = echarts.init(document.getElementById('map6'), null, {
+    renderer: 'canvas',
+    useDirtyRect: false
+  });
+  var myChart7 = echarts.init(document.getElementById('map7'), null, {
+    renderer: 'canvas',
+    useDirtyRect: false
+  });
+  var myChart8 = echarts.init(document.getElementById('map8'), null, {
+    renderer: 'canvas',
+    useDirtyRect: false
+  });
+  var myChart9 = echarts.init(document.getElementById('map9'), null, {
+    renderer: 'canvas',
+    useDirtyRect: false
+  });
+
+  //heatmap
+  var myChart = document.getElementById('heatmap');
+
+  var xd = ['农村(2018)', '城镇(2018)', '全国(2018)', '农村(2019)', '城镇(2019)', '全国(2019)', '农村(2020)', '城镇(2020)', '全国(2020)'];
+  var yd = ['北京', '天津', '河北', '山西', '内蒙', '辽宁', '吉林', '黑龙江', '上海', '江苏', '浙江', '安徽', '福建', '江西', '山东', '河南', '湖北', '湖南', '广东', '广西', '海南', '重庆', '四川', '贵州', '云南', '西藏', '陕西', '甘肃', '青海', '宁夏', '新疆'];
+  var zd = [
+    [16, 27.6, 26, 14.6, 31.1, 28.9, 15.08083853, 32.43693458, 30.08289421],
+    [11, 20.2, 18.6, 10.2, 18.4, 17, 10.37087334, 18.18288099, 16.82999295],
+    [7.5, 21.5, 14.4, 8.4, 20.5, 14.5, 8.922019764, 23.66632784, 16.47801694],
+    [11, 19.7, 15.7, 11.7, 21.3, 16.8, 12.03086968, 22.83396847, 17.88609463],
+    [12.5, 28.8, 22.2, 15.2, 29.9, 24, 14.65106439, 31.43017337, 24.75827316],
+    [5.2, 19.8, 14.9, 5.7, 21.3, 16, 6.103719947, 23.42015105, 17.65120528],
+    [5, 14.1, 10, 5.7, 14.9, 10.8, 6.072091284, 15.90854755, 11.56912456],
+    [4.9, 14.3, 10.4, 4.6, 13.6, 9.8, 5.274302055, 14.43743352, 10.62857218],
+    [12.8, 21.7, 20.8, 13.8, 21.6, 20.8, 16.81309231, 23.8493388, 23.13685203],
+    [11, 17.3, 15.1, 10.6, 16.8, 14.7, 10.98049621, 17.57719012, 15.36073238],
+    [9.5, 15.1, 13.2, 10.4, 15.1, 13.5, 11.25429346, 16.47071084, 14.72417349],
+    [9.2, 14.3, 11.7, 9.7, 14.3, 12, 9.127029423, 13.42646609, 11.29031932],
+    [7.5, 14.5, 11.7, 8.1, 12.3, 10.7, 8.254270701, 13.87252233, 11.74368993],
+    [5.9, 15.7, 10.8, 6.1, 15.8, 11, 6.755085095, 15.43344463, 11.19408777],
+    [10.7, 21, 16.4, 10.7, 21.8, 16.9, 11.0822604, 22.51207073, 17.55048521],
+    [7, 19.3, 12.5, 8, 19.1, 13.1, 8.362814454, 19.26761072, 13.45311084],
+    [4.2, 8.9, 6.8, 4.3, 9.8, 7.4, 4.753093861, 10.02614984, 7.744979646],
+    [3.3, 10.1, 6.7, 3.7, 10.1, 6.9, 4.074339081, 10.5566925, 7.37716037],
+    [4, 10.8, 8.6, 4.5, 10.8, 8.8, 4.719363086, 11.74645859, 9.592996807],
+    [2.6, 9.2, 5.6, 2.3, 8.1, 5, 2.562182768, 9.036715026, 5.561079745],
+    [1.7, 7.1, 4.7, 2, 6.6, 4.5, 2.259656469, 6.988945074, 4.900580553],
+    [7.8, 15.9, 12.6, 7.8, 17, 13.3, 8.008455923, 17.82083488, 14.01027738],
+    [8.3, 17.4, 12.5, 8.5, 15.1, 11.6, 6.639313107, 13.8145917, 10.0440488],
+    [2, 8, 4.4, 2, 8.3, 4.6, 2.025908938, 9.518185532, 5.136647473],
+    [2.2, 9.3, 5.1, 2.6, 10.1, 5.8, 2.754044683, 10.93593385, 6.222548085],
+    [12, 21, 14.3, 8.4, 20.3, 11.6, 4.548374923, 19.37160006, 8.536684609],
+    [6.9, 20.3, 13.8, 7.7, 20.8, 14.5, 8.573983367, 20.2858435, 14.73221195],
+    [6.3, 24.2, 13.6, 5.9, 29.7, 15.9, 6.90246974, 27.61555558, 15.71687482],
+    [12.5, 22.9, 17.6, 14.6, 23, 18.8, 10.46149176, 22.87989166, 16.73139567],
+    [8.5, 18, 13.5, 8.7, 19.7, 14.6, 7.895833803, 18.13993469, 13.45450124],
+    [11.1, 30.2, 19.9, 10.8, 33, 21.1, 7.619211154, 31.19000344, 18.7212751],
+
+  ];
+
+  var data = [
+    {
+      x: xd,
+      y: yd,
+      z: zd,
+      type: 'heatmap',
+      hoverongaps: false,
+      colorscale: 'RdBu'
+    }
+  ];
+
+  var layout = {
+    title: "各省不同类型居民奶类人均消费(2018-2020)"
+  };
+
+  Plotly.plot(myChart, data, layout);
+
+
+  //multimap
+  $.get('../dat/gxworkrate.geojson', function (result) {
+    // 注册 echarts 地图
+    echarts.registerMap('gxwork', result);
+    mapdata1 = result.features.map((item) => { // 显示窗口的数据转换
+      return {
+        value: item.properties.countyper18,
+        name: item.properties["省"]
+      }
+    });
+    mapdata2 = result.features.map((item) => { // 显示窗口的数据转换
+      return {
+        value: item.properties.cityper18,
+        name: item.properties["省"]
+      }
+    });
+    mapdata3 = result.features.map((item) => { // 显示窗口的数据转换
+      return {
+        value: item.properties.allper18,
+        name: item.properties["省"]
+      }
+    });
+    mapdata4 = result.features.map((item) => { // 显示窗口的数据转换
+      return {
+        value: item.properties.countyper19,
+        name: item.properties["省"]
+      }
+    });
+    mapdata5 = result.features.map((item) => { // 显示窗口的数据转换
+      return {
+        value: item.properties.cityper19,
+        name: item.properties["省"]
+      }
+    });
+    mapdata6 = result.features.map((item) => { // 显示窗口的数据转换
+      return {
+        value: item.properties.allper19,
+        name: item.properties["省"]
+      }
+    });
+    mapdata7 = result.features.map((item) => { // 显示窗口的数据转换
+      return {
+        value: item.properties.coutyper20,
+        name: item.properties["省"]
+      }
+    });
+    mapdata8 = result.features.map((item) => { // 显示窗口的数据转换
+      return {
+        value: item.properties.cityper20,
+        name: item.properties["省"]
+      }
+    });
+    mapdata9 = result.features.map((item) => { // 显示窗口的数据转换
+      return {
+        value: item.properties.allper20,
+        name: item.properties["省"]
+      }
+    });
+
+    var mapName = 'china'
+    var titlename = '农村居民人均消费量：2018'
+    var dataop = mapdata1
+    var option = {
+      title: {
+        text: titlename,
+        x: 'center',
+        textStyle: {
+          fontSize: 12
+        },
+        top: 20,
+      },
+      tooltip: {
+        trigger: 'item',
+        formatter: function (params) {
+          var toolTiphtml = ''
+          if (isNaN(params.value)) {
+            toolTiphtml = params.name + ': 0千克/人'
+          } else {
+            toolTiphtml = params.name + ': ' + params.value + '千克/人'
+          }
+
+          return toolTiphtml;
+        }
+      },
+      toolbox: {
+        show: false,
+        top: 40,
+        feature: {
+          saveAsImage: {}
+        }
+      },
+      visualMap: {
+        show: true,
+        left: 'left',
+        top: 'bottom',
+        orient: 'vertical', //图例排列方向
+        min: 0,
+        max: 20,
+        itemWidth: 10,
+        itemHeight: 40,
+        padding: [0, 0, 0, 0],
+        inRange: {
+          color: ["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#9E0142", "#464646"]
+
+        },
+        text: ['high', 'low'],
+        realtime: false,
+        calculable: true,
+        textStyle: {
+          color: '#000000'
+        }
+      },
+      geo: {
+        show: true,
+        map: mapName,
+        label: {
+          normal: {
+            show: false,
+            fontSize: 12,
+          },
+          emphasis: {
+            show: false,
+          }
+        },
+        roam: false,
+        itemStyle: {
+          normal: {
+            areaColor: '#FFFFFF',
+            borderColor: '#666666',
+          },
+          emphasis: {
+            areaColor: '#0099CC',
+          }
+        }
+      },
+      series: [
+        {
+          type: 'map',
+          map: mapName,
+          geoIndex: 0,
+          animation: false,
+          data: dataop
+        },
+      ]
+    };
+    // 使用刚指定的配置项和数据显示图表。
+    myChart1.setOption(option);
+
+    titlename = '城镇居民人均消费量：2018';
+    dataop = mapdata2;
+    var option = {
+      title: {
+        text: titlename,
+        x: 'center',
+        textStyle: {
+          fontSize: 12
+        },
+        top: 20,
+      },
+      tooltip: {
+        trigger: 'item',
+        formatter: function (params) {
+          var toolTiphtml = ''
+          if (isNaN(params.value)) {
+            toolTiphtml = params.name + ': 0千克/人'
+          } else {
+            toolTiphtml = params.name + ': ' + params.value + '千克/人'
+          }
+
+          return toolTiphtml;
+        }
+      },
+      toolbox: {
+        show: false,
+        top: 40,
+        feature: {
+          saveAsImage: {}
+        }
+      },
+      visualMap: {
+        show: true,
+        left: 'left',
+        top: 'bottom',
+        min: 0,
+        max: 33,
+        itemWidth: 10,
+        itemHeight: 40,
+        padding: [0, 0, 0, 0],
+        inRange: {
+          color: ["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#9E0142", "#464646"]
+
+        },
+        text: ['high', 'low'],
+        realtime: false,
+        calculable: true,
+        textStyle: {
+          color: '#000000'
+        }
+      },
+      geo: {
+        show: true,
+        map: mapName,
+        label: {
+          normal: {
+            show: false,
+            fontSize: 12,
+          },
+          emphasis: {
+            show: false,
+          }
+        },
+        roam: false,
+        itemStyle: {
+          normal: {
+            areaColor: '#FFFFFF',
+            borderColor: '#666666',
+          },
+          emphasis: {
+            areaColor: '#0099CC',
+          }
+        }
+      },
+      series: [
+        {
+          type: 'map',
+          map: mapName,
+          geoIndex: 0,
+          animation: false,
+          data: dataop
+        },
+      ]
+    };
+    myChart2.setOption(option);
+
+    titlename = '居民人均消费量：2018';
+    dataop = mapdata3;
+    var option = {
+      title: {
+        text: titlename,
+        x: 'center',
+        textStyle: {
+          fontSize: 12
+        },
+        top: 20,
+      },
+      tooltip: {
+        trigger: 'item',
+        formatter: function (params) {
+          var toolTiphtml = ''
+          if (isNaN(params.value)) {
+            toolTiphtml = params.name + ': 0千克/人'
+          } else {
+            toolTiphtml = params.name + ': ' + params.value + '千克/人'
+          }
+
+          return toolTiphtml;
+        }
+      },
+      toolbox: {
+        show: false,
+        top: 40,
+        feature: {
+          saveAsImage: {}
+        }
+      },
+      visualMap: {
+        show: true,
+        left: 'left',
+        top: 'bottom',
+        min: 0,
+        max: 30,
+        itemWidth: 10,
+        itemHeight: 40,
+        padding: [0, 0, 0, 0],
+        inRange: {
+          color: ["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#9E0142", "#464646"]
+
+        },
+        text: ['high', 'low'],
+        realtime: false,
+        calculable: true,
+        textStyle: {
+          color: '#000000'
+        }
+      },
+      geo: {
+        show: true,
+        map: mapName,
+        label: {
+          normal: {
+            show: false,
+            fontSize: 12,
+          },
+          emphasis: {
+            show: false,
+          }
+        },
+        roam: false,
+        itemStyle: {
+          normal: {
+            areaColor: '#FFFFFF',
+            borderColor: '#666666',
+          },
+          emphasis: {
+            areaColor: '#0099CC',
+          }
+        }
+      },
+      series: [
+        {
+          type: 'map',
+          map: mapName,
+          geoIndex: 0,
+          animation: false,
+          data: dataop
+        },
+      ]
+    };
+    myChart3.setOption(option);
+
+    titlename = '农村居民人均消费量：2019';
+    dataop = mapdata4;
+    var option = {
+      title: {
+        text: titlename,
+        x: 'center',
+        textStyle: {
+          fontSize: 12
+        },
+        top: 20,
+      },
+      tooltip: {
+        trigger: 'item',
+        formatter: function (params) {
+          var toolTiphtml = ''
+          if (isNaN(params.value)) {
+            toolTiphtml = params.name + ': 0千克/人'
+          } else {
+            toolTiphtml = params.name + ': ' + params.value + '千克/人'
+          }
+
+          return toolTiphtml;
+        }
+      },
+      toolbox: {
+        show: false,
+        top: 40,
+        feature: {
+          saveAsImage: {}
+        }
+      },
+      visualMap: {
+        show: true,
+        left: 'left',
+        top: 'bottom',
+        min: 0,
+        max: 20,
+        itemWidth: 10,
+        itemHeight: 40,
+        padding: [0, 0, 0, 0],
+        inRange: {
+          color: ["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#9E0142", "#464646"]
+
+        },
+        text: ['high', 'low'],
+        realtime: false,
+        calculable: true,
+        textStyle: {
+          color: '#000000'
+        }
+      },
+      geo: {
+        show: true,
+        map: mapName,
+        label: {
+          normal: {
+            show: false,
+            fontSize: 12,
+          },
+          emphasis: {
+            show: false,
+          }
+        },
+        roam: false,
+        itemStyle: {
+          normal: {
+            areaColor: '#FFFFFF',
+            borderColor: '#666666',
+          },
+          emphasis: {
+            areaColor: '#0099CC',
+          }
+        }
+      },
+      series: [
+        {
+          type: 'map',
+          map: mapName,
+          geoIndex: 0,
+          animation: false,
+          data: dataop
+        },
+      ]
+    };
+    myChart4.setOption(option);
+
+    titlename = '城镇居民人均消费量：2019';
+    dataop = mapdata5;
+    var option = {
+      title: {
+        text: titlename,
+        x: 'center',
+        textStyle: {
+          fontSize: 12
+        },
+        top: 20,
+      },
+      tooltip: {
+        trigger: 'item',
+        formatter: function (params) {
+          var toolTiphtml = ''
+          if (isNaN(params.value)) {
+            toolTiphtml = params.name + ': 0千克/人'
+          } else {
+            toolTiphtml = params.name + ': ' + params.value + '千克/人'
+          }
+
+          return toolTiphtml;
+        }
+      },
+      toolbox: {
+        show: false,
+        top: 40,
+        feature: {
+          saveAsImage: {}
+        }
+      },
+      visualMap: {
+        show: true,
+        left: 'left',
+        top: 'bottom',
+        min: 0,
+        max: 33,
+        itemWidth: 10,
+        itemHeight: 40,
+        padding: [0, 0, 0, 0],
+        inRange: {
+          color: ["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#9E0142", "#464646"]
+
+        },
+        text: ['high', 'low'],
+        realtime: false,
+        calculable: true,
+        textStyle: {
+          color: '#000000'
+        }
+      },
+      geo: {
+        show: true,
+        map: mapName,
+        label: {
+          normal: {
+            show: false,
+            fontSize: 12,
+          },
+          emphasis: {
+            show: false,
+          }
+        },
+        roam: false,
+        itemStyle: {
+          normal: {
+            areaColor: '#FFFFFF',
+            borderColor: '#666666',
+          },
+          emphasis: {
+            areaColor: '#0099CC',
+          }
+        }
+      },
+      series: [
+        {
+          type: 'map',
+          map: mapName,
+          geoIndex: 0,
+          animation: false,
+          data: dataop
+        },
+      ]
+    };
+    myChart5.setOption(option);
+
+    titlename = '居民人均消费量：2019';
+    dataop = mapdata6;
+    var option = {
+      title: {
+        text: titlename,
+        x: 'center',
+        textStyle: {
+          fontSize: 12
+        },
+        top: 20,
+      },
+      tooltip: {
+        trigger: 'item',
+        formatter: function (params) {
+          var toolTiphtml = ''
+          if (isNaN(params.value)) {
+            toolTiphtml = params.name + ': 0千克/人'
+          } else {
+            toolTiphtml = params.name + ': ' + params.value + '千克/人'
+          }
+
+          return toolTiphtml;
+        }
+      },
+      toolbox: {
+        show: false,
+        top: 40,
+        feature: {
+          saveAsImage: {}
+        }
+      },
+      visualMap: {
+        show: true,
+        left: 'left',
+        top: 'bottom',
+        min: 0,
+        max: 30,
+        itemWidth: 10,
+        itemHeight: 40,
+        padding: [0, 0, 0, 0],
+        inRange: {
+          color: ["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#9E0142", "#464646"]
+
+        },
+        text: ['high', 'low'],
+        realtime: false,
+        calculable: true,
+        textStyle: {
+          color: '#000000'
+        }
+      },
+      geo: {
+        show: true,
+        map: mapName,
+        label: {
+          normal: {
+            show: false,
+            fontSize: 12,
+          },
+          emphasis: {
+            show: false,
+          }
+        },
+        roam: false,
+        itemStyle: {
+          normal: {
+            areaColor: '#FFFFFF',
+            borderColor: '#666666',
+          },
+          emphasis: {
+            areaColor: '#0099CC',
+          }
+        }
+      },
+      series: [
+        {
+          type: 'map',
+          map: mapName,
+          geoIndex: 0,
+          animation: false,
+          data: dataop
+        },
+      ]
+    };
+    myChart6.setOption(option);
+
+    titlename = '农村居民人均消费量：2020';
+    dataop = mapdata7;
+    var option = {
+      title: {
+        text: titlename,
+        x: 'center',
+        textStyle: {
+          fontSize: 12
+        },
+        top: 20,
+      },
+      tooltip: {
+        trigger: 'item',
+        formatter: function (params) {
+          var toolTiphtml = ''
+          if (isNaN(params.value)) {
+            toolTiphtml = params.name + ': 0千克/人'
+          } else {
+            toolTiphtml = params.name + ': ' + params.value + '千克/人'
+          }
+
+          return toolTiphtml;
+        }
+      },
+      toolbox: {
+        show: false,
+        top: 40,
+        feature: {
+          saveAsImage: {}
+        }
+      },
+      visualMap: {
+        show: true,
+        left: 'left',
+        top: 'bottom',
+        min: 0,
+        max: 20,
+        itemWidth: 10,
+        itemHeight: 40,
+        padding: [0, 0, 0, 0],
+        inRange: {
+          color: ["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#9E0142", "#464646"]
+
+        },
+        text: ['high', 'low'],
+        realtime: false,
+        calculable: true,
+        textStyle: {
+          color: '#000000'
+        }
+      },
+      geo: {
+        show: true,
+        map: mapName,
+        label: {
+          normal: {
+            show: false,
+            fontSize: 12,
+          },
+          emphasis: {
+            show: false,
+          }
+        },
+        roam: false,
+        itemStyle: {
+          normal: {
+            areaColor: '#FFFFFF',
+            borderColor: '#666666',
+          },
+          emphasis: {
+            areaColor: '#0099CC',
+          }
+        }
+      },
+      series: [
+        {
+          type: 'map',
+          map: mapName,
+          geoIndex: 0,
+          animation: false,
+          data: dataop
+        },
+      ]
+    };
+    myChart7.setOption(option);
+
+
+    titlename = '城镇居民人均消费量：2020';
+    dataop = mapdata8;
+    var option = {
+      title: {
+        text: titlename,
+        x: 'center',
+        textStyle: {
+          fontSize: 12
+        },
+        top: 20,
+      },
+      tooltip: {
+        trigger: 'item',
+        formatter: function (params) {
+          var toolTiphtml = ''
+          if (isNaN(params.value)) {
+            toolTiphtml = params.name + ': 0千克/人'
+          } else {
+            toolTiphtml = params.name + ': ' + params.value + '千克/人'
+          }
+
+          return toolTiphtml;
+        }
+      },
+      toolbox: {
+        show: false,
+        top: 40,
+        feature: {
+          saveAsImage: {}
+        }
+      },
+      visualMap: {
+        show: true,
+        left: 'left',
+        top: 'bottom',
+        min: 0,
+        max: 33,
+        itemWidth: 10,
+        itemHeight: 40,
+        padding: [0, 0, 0, 0],
+        inRange: {
+          color: ["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#9E0142", "#464646"]
+
+        },
+        text: ['high', 'low'],
+        realtime: false,
+        calculable: true,
+        textStyle: {
+          color: '#000000'
+        }
+      },
+      geo: {
+        show: true,
+        map: mapName,
+        label: {
+          normal: {
+            show: false,
+            fontSize: 12,
+          },
+          emphasis: {
+            show: false,
+          }
+        },
+        roam: false,
+        itemStyle: {
+          normal: {
+            areaColor: '#FFFFFF',
+            borderColor: '#666666',
+          },
+          emphasis: {
+            areaColor: '#0099CC',
+          }
+        }
+      },
+      series: [
+        {
+          type: 'map',
+          map: mapName,
+          geoIndex: 0,
+          animation: false,
+          data: dataop
+        },
+      ]
+    };
+    myChart8.setOption(option);
+
+
+    titlename = '居民人均消费量：2020';
+    dataop = mapdata9;
+    var option = {
+      title: {
+        text: titlename,
+        x: 'center',
+        textStyle: {
+          fontSize: 12
+        },
+        top: 20,
+      },
+      tooltip: {
+        trigger: 'item',
+        formatter: function (params) {
+          var toolTiphtml = ''
+          if (isNaN(params.value)) {
+            toolTiphtml = params.name + ': 0千克/人'
+          } else {
+            toolTiphtml = params.name + ': ' + params.value + '千克/人'
+          }
+
+          return toolTiphtml;
+        }
+      },
+      toolbox: {
+        show: false,
+        top: 40,
+        feature: {
+          saveAsImage: {}
+        }
+      },
+      visualMap: {
+        show: true,
+        left: 'left',
+        top: 'bottom',
+        min: 0,
+        max: 30,
+        itemWidth: 10,
+        itemHeight: 40,
+        padding: [0, 0, 0, 0],
+        //padding:[0,0,0,0],
+        inRange: {
+          color: ["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#9E0142", "#464646"]
+
+        },
+        text: ['high', 'low'],
+        realtime: false,
+        calculable: true,
+        textStyle: {
+          color: '#000000'
+        }
+      },
+      geo: {
+        show: true,
+        map: mapName,
+        label: {
+          normal: {
+            show: false,
+            fontSize: 12,
+          },
+          emphasis: {
+            show: false,
+          }
+        },
+        roam: false,
+        itemStyle: {
+          normal: {
+            areaColor: '#FFFFFF',
+            borderColor: '#666666',
+          },
+          emphasis: {
+            areaColor: '#0099CC',
+          }
+        }
+      },
+      series: [
+        {
+          type: 'map',
+          map: mapName,
+          geoIndex: 0,
+          animation: false,
+          data: dataop
+        },
+      ]
+    };
+    myChart9.setOption(option);
+
+  });
+
+</script>
+
+</html>

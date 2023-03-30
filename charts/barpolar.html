@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%">
+<head>
+  <meta charset="utf-8">
+</head>
+<body style="height: 100%; margin: 0">
+  <div id="container" style="height: 100%"></div>
+
+  
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
+
+  <script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+    
+    var option;
+
+    option = {
+  title: [
+    {
+      show:false,
+      text: '加工厂数量分布',
+
+    }
+  ],
+  polar: {
+    radius: [30, '80%']
+  },
+  angleAxis: {
+    max: 289,
+    startAngle: 75
+  },
+  radiusAxis: {
+    type: 'category',
+    data: [ '酸奶加工厂', 'UHT奶加工厂','冰淇淋加工厂','奶粉加工厂','牧场']
+  },
+  tooltip: {},
+  series: {
+    type: 'bar',
+    data: [31, 34, 79,87, 169],
+    color:"#E0E1C1",
+    coordinateSystem: 'polar',
+    label: {
+      show: true,
+      position: 'middle',
+      formatter: '{c}'
+    }
+  }
+};
+
+    if (option && typeof option === 'object') {
+      myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+  </script>
+</body>
+</html>

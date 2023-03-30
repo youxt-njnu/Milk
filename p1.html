@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8' />
+  <title>乳业发展历程故事地图</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <link rel="icon" type="image/x-icon"
+    href="https://raw.githubusercontent.com/mapbox/assembly/publisher-staging/src/svgs/mapbox.svg">
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css' rel='stylesheet' />
+  <script type="text/javascript" src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="https://unpkg.com/intersection-observer@0.12.0/intersection-observer.js"></script>
+  <script src="https://unpkg.com/scrollama"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
+
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css' rel='stylesheet' />
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/swiper-bundle.min.css" rel="stylesheet">
+  <link href="css/glightbox.min.css" rel="stylesheet">
+  <link href="css/aos.css" rel="stylesheet">
+
+
+  <!-- Template Main CSS Files -->
+  <link href="css/indexmain.css" rel="stylesheet">
+  <link href="css/indexvariables.css" rel="stylesheet">
+
+  <style>
+    @charset "utf-8";
+
+    body {
+      background-color: rgb(242, 242, 242);
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+    }
+
+    /* a,
+    a:hover,
+    a:visited {
+      color: #0071bc;
+    } */
+
+    #map {
+      position: fixed;
+      top: 10%;
+      left: 0;
+      /* margin-top: 10%; */
+      /* margin-left: 0; */
+      width: 100%;
+      height: 90%;
+    }
+
+    #mapInset {
+      top: 12%;
+      right: 30px;
+      height: 180px;
+      width: 250px;
+      max-width: 100%;
+      position: fixed;
+      z-index: 0;
+      opacity: 1;
+      transition: opacity 0.5s ease-in-out;
+      pointer-events: none;
+    }
+
+    #context {
+      transition: margin-left .5s;
+      /*主体内容延迟0.5s整体y右移动*/
+      padding: 16px;
+    }
+
+    #storyheader {
+      top:10%;
+      margin-top: -3.5%;
+      width: 100%;
+      position: relative;
+      z-index: 5;
+    }
+
+    #storyheader h1,
+    #storyheader h2,
+    #storyheader p {
+      margin: 0;
+      padding: 2vh 2vw;
+      text-align: center;
+    }
+
+    #footer {
+      width: 100%;
+      min-height: 5vh;
+      padding-top: 2vh;
+      padding-bottom: 2vh;
+      text-align: center;
+      line-height: 25px;
+      font-size: 10px;
+      position: relative;
+      z-index: 5;
+    }
+
+    #features {
+      padding-top: 10vh;
+      padding-bottom: 10vh;
+    }
+
+    .hidden {
+      visibility: hidden;
+    }
+
+    .centered {
+      width: 50vw;
+      margin: 0 auto;
+    }
+
+    .lefty {
+      width: 33vw;
+      margin-left: 5vw;
+    }
+
+    .righty {
+      width: 33vw;
+      margin-left: 62vw;
+    }
+
+    .fully {
+      width: 100%;
+      margin: auto;
+    }
+
+    .light {
+      color: #444;
+      background-color: #fafafa;
+    }
+
+    .dark {
+      color: #fafafa;
+      background-color: #444;
+    }
+
+    .step {
+      padding-bottom: 50vh;
+      /* margin-bottom: 10vh; */
+      opacity: 0.25;
+    }
+
+    .step.active {
+      opacity: 0.9;
+    }
+
+    .step div {
+      padding: 25px 50px;
+      line-height: 25px;
+      font-size: 14px;
+    }
+
+    .step img {
+      width: 100%;
+    }
+
+    .mapboxgl-popup {
+      max-width: 200px;
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .mapboxgl-popup-content {
+      font-family: 'Open Sans', sans-serif;
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .echartMap div {
+      position: absolute;
+      overflow: auto;
+    }
+
+    @media (max-width: 750px) {
+
+      .centered,
+      .lefty,
+      .righty,
+      .fully {
+        width: 90vw;
+        margin: 0 auto;
+      }
+    }
+
+    .marker {
+      display: block;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 0;
+      background-size: 50px 50px;
+    }
+
+    .mapboxgl-canvas-container.mapboxgl-touch-zoom-rotate.mapboxgl-touch-drag-pan,
+    .mapboxgl-canvas-container.mapboxgl-touch-zoom-rotate.mapboxgl-touch-drag-pan .mapboxgl-canvas {
+      touch-action: unset;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ======= Header ======= -->
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+
+      <a href="index.html" class="logo d-flex align-items-center">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+        <!-- <img src="assets/img/logo.png" alt=""> -->
+        <h1>MILK</h1>
+      </a>
+
+      <nav id="navbar" class="navbar">
+        <ul>
+          <li><a href="p1.html">故事地图</a></li>
+          <li><a href="factoryheat.html">工厂分布</a></li>
+          <li><a href="p3.html">品牌发展</a></li>
+          <li><a href="gxpage.html">供需分析</a></li>
+        </ul>
+      </nav><!-- .navbar -->
+
+      <div class="position-relative">
+        <a href="charts/10组-开题.html">电子地图课程第十组</a>
+
+        <a href="#" class="mx-2 js-search-open"><span class="bi-search"></span></a>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+
+        <!-- ======= Search Form ======= -->
+        <div class="search-form-wrap js-search-form-wrap">
+          <form action="search-result.html" class="search-form">
+            <!-- <span class="icon bi-search"></span> -->
+            <!-- <input type="text" placeholder="Search" class="form-control"> -->
+            <button class="btn js-search-close"><span class="icon bar-chart-line-fill"></span></button>
+          </form>
+        </div><!-- End Search Form -->
+
+      </div>
+
+    </div>
+
+  </header>
+  <!-- End Header -->
+
+  <main id="main">
+    <div id="context">
+      <div id="map"></div>
+      <div id="mapInset"></div>
+      <div id="story"></div>
+    </div>
+  </main>
+
+
+  <script type="text/javascript" src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="js/echarts-all-3.js"></script>
+  <script type="text/javascript" src="js/EchartsLayer.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/points.js"></script>
+  <script src="js/echartline.js"></script>
+  <script>
+    var initLoad = true;
+    var layerTypes = {
+      'fill': ['fill-opacity'],
+      'line': ['line-opacity'],
+      'circle': ['circle-opacity', 'circle-stroke-opacity'],
+      'symbol': ['icon-opacity', 'text-opacity'],
+      'raster': ['raster-opacity'],
+      'fill-extrusion': ['fill-extrusion-opacity'],
+      'heatmap': ['heatmap-opacity']
+    }
+
+    var alignments = {
+      'left': 'lefty',
+      'center': 'centered',
+      'right': 'righty',
+      'full': 'fully'
+    }
+
+    function getLayerPaintType(layer) {
+      var layerType = map.getLayer(layer).type;
+      return layerTypes[layerType];
+    }
+
+    function setLayerOpacity(layer) {
+      var paintProps = getLayerPaintType(layer.layer);
+      paintProps.forEach(function (prop) {
+        var options = {};
+        if (layer.duration) {
+          var transitionProp = prop + "-transition";
+          options = { "duration": layer.duration };
+          map.setPaintProperty(layer.layer, transitionProp, options);
+        }
+        map.setPaintProperty(layer.layer, prop, layer.opacity, options);
+      });
+    }
+
+    var story = document.getElementById('story');
+    var features = document.createElement('div');
+    features.setAttribute('id', 'features');
+
+    var storyheader = document.createElement('div');
+
+    var maptype = 0;
+    //array记录要用到的三个风格地图的url和对应的点
+      var maptypesource = ['', 'mapbox://styles/lingmiao/cl2l940po000x15o8h7w476pw', 'mapbox://styles/lingmiao/cl2vi3y4l000i15pis8i53ohx', 'mapbox://styles/lingmiao/cl0j88qss005s14p69myydr4v', 'mapbox://styles/lingmiao/cl0j88qss005s14p69myydr4v'];
+
+    geojsonmarker = [];
+
+    if (config.title) {
+      var titleText = document.createElement('h1');
+      titleText.innerText = config.title;
+      storyheader.appendChild(titleText);
+    }
+
+    if (config.subtitle) {
+      var subtitleText = document.createElement('h2');
+      subtitleText.innerText = config.subtitle;
+      storyheader.appendChild(subtitleText);
+    }
+
+    if (config.byline) {
+      var bylineText = document.createElement('p');
+      bylineText.innerText = config.byline;
+      storyheader.appendChild(bylineText);
+    }
+
+    if (storyheader.innerText.length > 0) {
+      storyheader.classList.add(config.theme);
+      storyheader.setAttribute('id', 'storyheader');
+      story.appendChild(storyheader);
+    }
+
+    config.chapters.forEach((record, idx) => {
+      var container = document.createElement('div');
+      var chapter = document.createElement('div');
+
+      if (record.title) {
+        var title = document.createElement('h2');
+        title.innerText = record.title;
+        chapter.appendChild(title);
+      }
+
+      if (record.image) {
+        var image = new Image();
+        image.src = record.image;
+        chapter.appendChild(image);
+      }
+
+      if (record.description) {
+        var story = document.createElement('p');
+        story.innerHTML = record.description;
+        chapter.appendChild(story);
+      }
+
+      container.setAttribute('id', record.id);
+      container.classList.add('step');
+      if (idx === 0) {
+        container.classList.add('active');
+      }
+
+      chapter.classList.add(config.theme);
+      container.appendChild(chapter);
+      container.classList.add(alignments[record.alignment] || 'centered');
+      if (record.hidden) {
+        container.classList.add('hidden');
+      }
+      features.appendChild(container);
+    });
+
+    story.appendChild(features);
+
+    var footer = document.createElement('div');
+
+    if (config.footer) {
+      var footerText = document.createElement('p');
+      footerText.innerHTML = config.footer;
+      footer.appendChild(footerText);
+    }
+
+    // if (footer.innerText.length > 0) {
+    //   footer.classList.add(config.theme);
+    //   footer.setAttribute('id', 'footer');
+    //   story.appendChild(footer);
+    // }
+
+    mapboxgl.accessToken = config.accessToken;
+
+    const transformRequest = (url) => {
+      const hasQuery = url.indexOf("?") !== -1;
+      const suffix = hasQuery ? "&pluginName=scrollytellingV2" : "?pluginName=scrollytellingV2";
+      return {
+        url: url + suffix
+      }
+    }
+
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: config.style,
+      center: config.chapters[0].location.center,
+      zoom: config.chapters[0].location.zoom,
+      bearing: config.chapters[0].location.bearing,
+      pitch: config.chapters[0].location.pitch,
+      interactive: false,
+      transformRequest: transformRequest,
+      projection: config.projection
+    });
+
+    var nav = new mapboxgl.NavigationControl(
+      {
+        //是否显示指南针，默认为true
+        "showCompass": true,
+        //是否显示缩放按钮，默认为true
+        "showZoom": true
+      }
+    );
+    map.addControl(nav, 'top-left');
+
+    // Create a inset map if enabled in config.js
+    if (config.inset) {
+      var insetMap = new mapboxgl.Map({
+        container: 'mapInset', // container id
+        style: 'mapbox://styles/mapbox/dark-v10', //hosted style id
+        center: config.chapters[0].location.center,
+        // Hardcode above center value if you want insetMap to be static.
+        zoom: 3, // starting zoom
+        hash: false,
+        interactive: false,
+        attributionControl: false,
+        //Future: Once official mapbox-gl-js has globe view enabled,
+        //insetmap can be a globe with the following parameter.
+        //projection: 'globe'
+      });
+    }
+
+    if (config.showMarkers) {
+      var marker = new mapboxgl.Marker({ color: config.markerColor });
+      marker.setLngLat(config.chapters[0].location.center).addTo(map);
+    }
+
+    // instantiate the scrollama
+    var scroller = scrollama();
+
+
+    map.on("load", function () {
+      if (config.use3dTerrain) {
+        $('.map').focus();
+        map.addSource('mapbox-dem', {
+          'type': 'raster-dem',
+          'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
+          'tileSize': 512,
+          'maxzoom': 14
+        });
+        // add the DEM source as a terrain layer with exaggerated height
+        map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
+
+        // add a sky layer that will show when the map is highly pitched
+        map.addLayer({
+          'id': 'sky',
+          'type': 'sky',
+          'paint': {
+            'sky-type': 'atmosphere',
+            'sky-atmosphere-sun': [0.0, 0.0],
+            'sky-atmosphere-sun-intensity': 15
+          }
+        });
+      };
+
+      // As the map moves, grab and update bounds in inset map.
+      if (config.inset) {
+        map.on('move', getInsetBounds);
+      }
+      map.dragPan.enable();
+      map.keyboard.enable();
+      // setup the instance, pass callback functions
+      scroller
+        .setup({
+          step: '.step',
+          offset: 0.5,
+          progress: true
+        })
+        .onStepEnter(async response => {
+          var chapter = config.chapters.find(chap => chap.id === response.element.id);
+          response.element.classList.add('active');
+          map[chapter.mapAnimation || 'flyTo'](chapter.location);
+          // Incase you do not want to have a dynamic inset map,
+          // rather want to keep it a static view but still change the
+          // bbox as main map move: comment out the below if section.
+          if (chapter.maptype != maptype) {
+            maptype = chapter.maptype;
+            if (maptype == 4) {
+              var echartslayer = new EchartsLayer(map);
+              echartslayer.chart.setOption(option);
+            }
+              if (maptype != 0) {
+                  map.setStyle(maptypesource[maptype]);
+                  if (geojsonmarker !== null) {
+                      for (let i = geojsonmarker.length - 1; i >= 0; i--) {
+                          geojsonmarker[i].remove();
+                      }
+                  }
+                  for (let feature of geojsonsource[maptype].features) {
+                      var el = document.createElement('div');
+                      el.className = 'marker';
+                      el.style.backgroundImage = 'url(' + feature.properties.image + ')';
+                      el.style.height = "50px"
+                      el.style.width = "50px";
+                      geojsonmarker.push(new mapboxgl.Marker(el)
+                          .setLngLat(feature.geometry.coordinates)
+                          .setPopup(
+                              new mapboxgl.Popup({ closeButton: false, offset: 25 }) // add popups
+                                  .setHTML(
+                                      `<h3>${feature.properties.title}</h3><img src=${feature.properties.image} height=${feature.properties.imageHeight} width=${feature.properties.imageWidth}><p>${feature.properties.description}</p>`
+                                  )
+                          )
+                          .addTo(map))
+                  }
+              }
+          }
+          if (config.inset) {
+            if (chapter.location.zoom < 5) {
+              insetMap.flyTo({ center: chapter.location.center, zoom: 0 });
+            }
+            else {
+              insetMap.flyTo({ center: chapter.location.center, zoom: 3 });
+            }
+          }
+          if (config.showMarkers) {
+            marker.setLngLat(chapter.location.center);
+          }
+          if (chapter.onChapterEnter.length > 0) {
+            chapter.onChapterEnter.forEach(setLayerOpacity);
+          }
+          if (chapter.callback) {
+            window[chapter.callback]();
+          }
+          if (chapter.rotateAnimation) {
+            map.once('moveend', () => {
+              const rotateNumber = map.getBearing();
+              map.rotateTo(rotateNumber + 180, {
+                duration: 30000, easing: function (t) {
+                  return t;
+                }
+              });
+            });
+          }
+        })
+        .onStepExit(response => {
+          var chapter = config.chapters.find(chap => chap.id === response.element.id);
+          response.element.classList.remove('active');
+          if (chapter.onChapterExit.length > 0) {
+            chapter.onChapterExit.forEach(setLayerOpacity);
+          }
+        });
+    });
+
+    //Helper functions for insetmap
+    function getInsetBounds() {
+      let bounds = map.getBounds();
+
+      let boundsJson = {
+        "type": "FeatureCollection",
+        "features": [{
+          "type": "Feature",
+          "properties": {},
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  bounds._sw.lng,
+                  bounds._sw.lat
+                ],
+                [
+                  bounds._ne.lng,
+                  bounds._sw.lat
+                ],
+                [
+                  bounds._ne.lng,
+                  bounds._ne.lat
+                ],
+                [
+                  bounds._sw.lng,
+                  bounds._ne.lat
+                ],
+                [
+                  bounds._sw.lng,
+                  bounds._sw.lat
+                ]
+              ]
+            ]
+          }
+        }]
+      }
+
+      if (initLoad) {
+        addInsetLayer(boundsJson);
+        initLoad = false;
+      } else {
+        updateInsetLayer(boundsJson);
+      }
+
+    }
+
+    function addInsetLayer(bounds) {
+      insetMap.addSource('boundsSource', {
+        'type': 'geojson',
+        'data': bounds
+      });
+
+      insetMap.addLayer({
+        'id': 'boundsLayer',
+        'type': 'fill',
+        'source': 'boundsSource', // reference the data source
+        'layout': {},
+        'paint': {
+          'fill-color': '#fff', // blue color fill
+          'fill-opacity': 0.2
+        }
+      });
+      // // Add a black outline around the polygon.
+      insetMap.addLayer({
+        'id': 'outlineLayer',
+        'type': 'line',
+        'source': 'boundsSource',
+        'layout': {},
+        'paint': {
+          'line-color': '#000',
+          'line-width': 1
+        }
+      });
+    }
+
+    function updateInsetLayer(bounds) {
+      insetMap.getSource('boundsSource').setData(bounds);
+    }
+
+
+
+    // setup resize event
+    window.addEventListener('resize', scroller.resize);
+
+  </script>
+
+</body>
+
+</html>

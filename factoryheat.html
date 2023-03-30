@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>乳业加工厂分布</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
+
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css' rel='stylesheet' />
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/swiper-bundle.min.css" rel="stylesheet">
+  <link href="css/glightbox.min.css" rel="stylesheet">
+  <link href="css/aos.css" rel="stylesheet">
+
+
+  <!-- Template Main CSS Files -->
+  <link href="css/indexmain.css" rel="stylesheet">
+  <link href="css/indexvariables.css" rel="stylesheet">
+
+  <style>
+    @charset "utf-8";
+
+    body {
+      background-color: rgb(242, 242, 242);
+      margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      position: absolute;
+      top: 10%;
+      left: 0;
+      /* margin-top: 10%; */
+      /* margin-left: 0; */
+      width: 100%;
+      height: 90%;
+    }
+
+    /*侧边栏选择器*/
+    .sidenav {
+      height: 100%;
+      width: 0;
+      /*原始宽度为0*/
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      right: 0;
+      background-color: rgb(242, 242, 242);
+      overflow-x: hidden;
+      transition: 0.5s;
+      padding-top: 60px;
+    }
+
+    /*侧边栏选项选择器*/
+    .sidenav a {
+      padding: 8px 8px 8px 32px;
+      text-decoration: none;
+      font-size: 24px;
+      color: rgb(33, 37, 41);
+      display: block;
+      transition: 0.3s;
+    }
+
+    /*侧栏标签和关闭按钮光标的效果*/
+    .sidenav a:hover,
+    .offcanvas a:focus {
+      color: #1582b9;
+    }
+
+    /*侧栏和关闭按钮的位置选择器*/
+    .sidenav .closebtn {
+      position: absolute;
+      top: 50px;
+      right: 5px;
+      font-size: 24px;
+      margin-left: 50px;
+    }
+
+    #context {
+      transition: margin-left .5s;
+      /*主体内容延迟0.5s整体y右移动*/
+      padding: 16px;
+    }
+
+    /*当文档高度小于450px时，改变侧栏的padding属性和字体大小*/
+    @media screen and (max-height: 450px) {
+      .sidenav {
+        padding-top: 15px;
+      }
+
+      .sidenav a {
+        font-size: 18px;
+      }
+    }
+
+    .map-overlay {
+      font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+      position: absolute;
+      width: 60px;
+      bottom: 0;
+      right: 8px;
+      padding: 10px;
+    }
+
+    .map-overlay .map-overlay-inner {
+      background-color: #fff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      border-radius: 3px;
+      height: 40px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .map-overlay-inner fieldset {
+      border: none;
+      padding: 0;
+      margin: 0 0 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ======= Header ======= -->
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+
+      <a href="index.html" class="logo d-flex align-items-center">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+        <!-- <img src="assets/img/logo.png" alt=""> -->
+        <h1>MILK</h1>
+      </a>
+
+      <nav id="navbar" class="navbar">
+        <ul>
+          <li><a href="p1.html">故事地图</a></li>
+          <li><a href="factoryheat.html">工厂分布</a></li>
+          <li><a href="p3.html">品牌发展</a></li>
+          <li><a href="gxpage.html">供需分析</a></li>
+        </ul>
+      </nav><!-- .navbar -->
+
+      <div class="position-relative">
+        <a href="charts/10组-开题.html">电子地图课程第十组</a>
+
+        <a href="#" class="mx-2 js-search-open"><span class="bi-search"></span></a>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+
+        <!-- ======= Search Form ======= -->
+        <div class="search-form-wrap js-search-form-wrap">
+          <form action="search-result.html" class="search-form">
+            <!-- <span class="icon bi-search"></span> -->
+            <!-- <input type="text" placeholder="Search" class="form-control"> -->
+            <button class="btn js-search-close"><span class="icon bar-chart-line-fill"></span></button>
+          </form>
+        </div><!-- End Search Form -->
+
+      </div>
+
+    </div>
+
+  </header><!-- End Header -->
+
+  <main id="main">
+
+    <!--侧栏页面设计-->
+    <div id="mySidenav" class="sidenav">
+      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()"> &times;</a>
+      <!-- <h5> 设置</h5> -->
+      <div class="row mb-5">
+        <!-- <legend class="col-form-label col-sm-2 pt-0">Radios</legend> -->
+        <!-- <hr class="dropdown-divider"> -->
+        <!-- <div class="col-sm-10">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" checked>
+            <label class="form-check-label" for="gridRadios1">
+              蒙牛
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2">
+            <label class="form-check-label" for="gridRadios2">
+              伊利
+            </label>
+          </div>
+        </div> -->
+        <!-- <hr class="dropdown-divider"> -->
+        <div class="col-sm-10">
+          <div class="form-floating mb-3">
+            <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
+              <option selected value="pasture">牧场</option>
+              <option value="UTC_milk">UHT奶加工厂</option>
+              <option value="yogurt">酸奶加工厂</option>
+              <option value="icecream">冰淇淋加工厂</option>
+              <option value="powder">奶粉加工厂</option>
+            </select>
+            <label for="floatingSelect">选择类型</label>
+          </div>
+        </div>
+        <div class="col-sm-12">
+          <h6 style="text-align: center;">加工厂数量分布</h6>
+          <iframe src="charts/barpolar.html" width="100%" height="150%" frameborder="0"></iframe>
+        </div>
+      </div>
+
+    </div>
+    <div id="context">
+      <div id="map">
+      </div>
+      <div class="map-overlay top">
+        <div class="map-overlay-inner">
+          <span style="font-size:24px; cursor:pointer" onclick="openNav()">&#9776;</span>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Vendor JS Files -->
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/swiper-bundle.min.js"></script>
+  <script src="js/glightbox.min.js"></script>
+  <script src="js/aos.js"></script>
+  <!-- <script src="assets/vendor/php-email-form/validate.js"></script> -->
+
+  <!-- Template Main JS File -->
+  <script src="js/indexmain.js"></script>
+  <script src="js/jquery.min.js"></script>
+
+  <script type="text/ecmascript">
+    /*改变原始宽度（0）*/
+    function openNav() {
+      document.getElementById("mySidenav").style.width = "250px";
+      document.getElementById("context").style.marginRight = "250px";
+      document.getElementById("map").style.width = "80%";
+    }
+    /*恢复原始宽度0*/
+    function closeNav() {
+      document.getElementById("mySidenav").style.width = "0";
+      document.getElementById("context").style.marginRight = "0";
+      document.getElementById("map").style.width = "100%";
+    }
+
+    $('.form-select').on('change', function () {
+      var val = $(this).val();
+      console.log(val);
+      if (map.getLayer('grid-heat')) {
+        map.removeLayer('grid-heat');
+        map.removeLayer('grid-point');
+        map.removeSource('grid');
+      }
+      addHeat(val);
+      // $(this).blur();
+    })
+    // .on('focus', function () {
+    //   var selectText = $(this).find('option:selected').text();
+    //   $(this).find('option[value=5]').text(selectText)
+    //   $(this).val(5);
+    // })
+  </script>
+
+  <!-- heatmap -->
+  <script>
+    // add map
+    mapboxgl.accessToken = 'pk.eyJ1IjoibGlua2xpbmsiLCJhIjoiY2t5azNveG05MnRwdTJ4bzhxM2JmNGg3aCJ9.giuzL5T9qkSSl9EWMUK9dg';
+    const map = new mapboxgl.Map({
+      container: 'map', // container ID
+      style: 'mapbox://styles/linklink/cl459d0is000m14o0kj13eq6a', // style URL
+      //style:'mapbox://styles/linklink/cl1el423a000r14o9gavtgcq8',
+      center: [120, 32], // starting position [lng, lat]
+      zoom: 3, // starting zoom
+      touchZoomRotatez: true
+    });
+
+    //-----------add map controls----------------------
+    var nav = new mapboxgl.NavigationControl();
+    map.addControl(nav, 'top-left');
+
+    var geolocate = new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true
+      },
+      trackUserLocation: true
+    });
+    map.addControl(geolocate);
+
+    var scale = new mapboxgl.ScaleControl({
+      maxWidth: 80,
+      unit: 'metric'//meter
+    });
+    map.addControl(scale);
+
+    var fullScreen = new mapboxgl.FullscreenControl();
+    map.addControl(fullScreen);
+    //-----------add map controls----------------------
+
+
+    //-----------add heatmap----------------------
+    map.on('load', function () {
+      addHeat('pasture');
+
+    });
+
+    function addHeat(attri) {
+      map.addSource('grid', {
+        type: 'geojson',
+        data: 'dat/factoryall1.geojson'
+      });
+      console.log(map);
+      // add heatmap layer here
+      map.addLayer({
+        id: 'grid-heat',
+        type: 'heatmap',
+        source: 'grid',
+        maxzoom: 20,
+        paint: {
+          // increase weight as diameter breast height increases
+          'heatmap-weight': {
+            property: attri,
+            type: 'exponential',
+            stops: [
+              [0, 0],
+              [1, 1]
+            ]
+          },
+          // increase intensity as zoom level increases
+          'heatmap-intensity': {
+            stops: [
+              [0, 0],
+              [1, 3]
+            ]
+          },
+          // assign color values be applied to points depending on their density
+          'heatmap-color': [
+            'interpolate',          //采用插值方法
+            ['linear'],             //插值采用线性
+            ['heatmap-density'],    //颜色插值的依据，可以选择zoom、指定值字段等一系列依据
+            0,                      //下面一系列是指定密度在不同区间时应当显示的颜色。
+            'rgba(33,102,172,0)',   //其中两个数字表示一个区间，颜色表示在这个区间的取值
+            0.2,                    //下面几个属性也是如此
+            'rgb(103,169,207)',
+            0.4,
+            'rgb(209,229,240)',
+            0.6,
+            'rgb(253,219,199)',
+            0.8,
+            'rgb(239,138,98)',
+            1,
+            'rgb(178,24,43)'
+          ],
+          // increase radius as zoom increases
+          'heatmap-radius': {
+            stops: [
+              [0, 1],
+              [1, 20]
+            ]
+          },
+          // decrease opacity to transition into the circle layer
+          'heatmap-opacity': {
+            default: 1,
+            stops: [
+              [10, 1],
+              [30, 0]
+            ]
+          },
+        }
+      }, 'waterway-label');
+
+      // add circle layer here
+      map.addLayer({
+        id: 'grid-point',
+        type: 'circle',
+        source: 'grid',
+        minzoom: 6,
+        paint: {
+          // increase the radius of the circle as the zoom level and dbh value increases
+          'circle-radius': {
+            property: attri,
+            type: 'exponential',
+            stops: [
+              [{ zoom: 15, value: 1 }, 5],
+              [{ zoom: 15, value: 200 }, 10],
+              [{ zoom: 22, value: 1 }, 20],
+              [{ zoom: 22, value: 200 }, 50],
+            ]
+          },
+          'circle-color': {
+            property: attri,
+            type: 'exponential',
+            stops: [
+              [0, 'rgba(236,222,239,0)'],
+              [5, 'rgb(236,222,239)'],
+              [10, 'rgb(208,209,230)'],
+              [40, 'rgb(166,189,219)'],
+              [60, 'rgb(103,169,207)'],
+              [80, 'rgb(28,144,153)'],
+              [120, 'rgb(1,108,89)']
+            ]
+          },
+          'circle-stroke-color': 'white',
+          'circle-stroke-width': 1,
+          'circle-opacity': {
+            stops: [
+              [20, 0],
+              [50, 1]
+            ]
+          }
+        }
+      }, 'waterway-label');
+
+      //add interaction
+      map.on('click', 'grid-point', function (e) {
+        new mapboxgl.Popup()
+          .setLngLat(e.features[0].geometry.coordinates)
+          .setHTML('<b>名称：</b> ' + e.features[0].properties.name)
+          .addTo(map);
+      });
+    }
+
+   </script>
+</body>
+
+</html>

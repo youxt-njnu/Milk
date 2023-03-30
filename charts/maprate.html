@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>graphgx</title>
+
+  <!-- 步骤1：引入 -->
+  <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="../js/china.js"></script>
+  <link href="../css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+  
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <div id="map1" style="min-height: 300px;" class="echart"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <div id="map2" style="min-height: 300px;" class="echart"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <div id="map3" style="min-height: 300px;" class="echart"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <div id="map4" style="min-height: 300px;" class="echart"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <div id="map5" style="min-height: 300px;" class="echart"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <div id="map6" style="min-height: 300px;" class="echart"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var colorgroup= ["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#9E0142", "#464646"];
+    var mapdata1, mapdata2, mapdata3, mapdata4, mapdata5, mapdata6 = [];
+    var option;
+
+    var myChart = echarts.init(document.getElementById('map1'), null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var myChart2 = echarts.init(document.getElementById('map2'), null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var myChart3 = echarts.init(document.getElementById('map3'), null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var myChart4 = echarts.init(document.getElementById('map4'), null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var myChart5 = echarts.init(document.getElementById('map5'), null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var myChart6 = echarts.init(document.getElementById('map6'), null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+
+    $.get('../dat/gxworkrate.geojson', function (result) {
+      // 注册 echarts 地图
+      echarts.registerMap('gxwork', result);
+      mapdata1 = result.features.map((item) => { // 显示窗口的数据转换
+        return {
+          value: item.properties.rate18,
+          name: item.properties["省"]
+        }
+      });
+      mapdata2 = result.features.map((item) => { // 显示窗口的数据转换
+        return {
+          value: item.properties.rate19,
+          name: item.properties["省"]
+        }
+      });
+      mapdata3 = result.features.map((item) => { // 显示窗口的数据转换
+        return {
+          value: item.properties.rate20,
+          name: item.properties["省"]
+        }
+      });
+      mapdata4 = result.features.map((item) => { // 显示窗口的数据转换
+        return {
+          value: item.properties.Bin18,
+          name: item.properties["省"]
+        }
+      });
+      mapdata5 = result.features.map((item) => { // 显示窗口的数据转换
+        return {
+          value: item.properties.Bin19,
+          name: item.properties["省"]
+        }
+      });
+      mapdata6 = result.features.map((item) => { // 显示窗口的数据转换
+        return {
+          value: item.properties.Bin20,
+          name: item.properties["省"]
+        }
+      });
+
+      var mapName = 'china'
+      var titlename = '奶业供需比：2018'
+      var dataop = mapdata1
+      var option = {
+        title: {
+          text: titlename,
+          x: 'center',
+          textStyle: {
+            fontSize: 12
+          },
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (params) {
+            var toolTiphtml = ''
+            if (isNaN(params.value)) {
+              toolTiphtml = params.name + ': 0'
+            } else {
+              toolTiphtml = params.name + ': ' + params.value
+            }
+
+            return toolTiphtml;
+          }
+        },
+        toolbox: {
+          show: true,
+          feature: {
+            saveAsImage: {}
+          }
+        },
+        visualMap: {
+          show: true,
+          left: 'left',
+          top: 'bottom',
+          min: 0,
+          max: 20,
+          itemWidth: 10,
+          itemHeight:50,
+          padding:[0,0,50,0],
+          inRange: {
+            color: ["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#9E0142", "#464646"]
+
+          },
+          text: ['high', 'low'],
+          realtime: false,
+          calculable: true,
+          textStyle: {
+            color: '#000000'
+          }
+        },
+        geo: {
+          show: true,
+          map: mapName,
+          label: {
+            normal: {
+              show: false,
+              fontSize: 12,
+            },
+            emphasis: {
+              show: false,
+            }
+          },
+          roam: false,
+          itemStyle: {
+            normal: {
+              areaColor: '#FFFFFF',
+              borderColor: '#666666',
+            },
+            emphasis: {
+              areaColor: '#0099CC',
+            }
+          }
+        },
+        series: [
+          {
+            type: 'map',
+            map: mapName,
+            geoIndex: 0,
+            animation: false,
+            data: dataop
+          },
+        ]
+      };
+      // 使用刚指定的配置项和数据显示图表。
+      myChart.setOption(option);
+
+      titlename = '奶业供需比：2019';
+      dataop = mapdata2;
+      var option = {
+        title: {
+          text: titlename,
+          x: 'center',
+          textStyle: {
+            fontSize: 12
+          },
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (params) {
+            var toolTiphtml = ''
+            if (isNaN(params.value)) {
+              toolTiphtml = params.name + ': 0'
+            } else {
+              toolTiphtml = params.name + ': ' + params.value
+            }
+
+            return toolTiphtml;
+          }
+        },
+        toolbox: {
+          show: true,
+          feature: {
+            saveAsImage: {}
+          }
+        },
+        visualMap: {
+          show: true,
+          left: 'left',
+          top: 'bottom',
+          min: 0,
+          max: 20,
+          itemWidth: 10,
+          itemHeight:50,
+          padding:[0,0,50,0],
+          inRange: {
+            color: ["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#9E0142", "#464646"]
+
+          },
+          text: ['high', 'low'],
+          realtime: false,
+          calculable: true,
+          textStyle: {
+            color: '#000000'
+          }
+        },
+        geo: {
+          show: true,
+          map: mapName,
+          label: {
+            normal: {
+              show: false,
+              fontSize: 12,
+            },
+            emphasis: {
+              show: false,
+            }
+          },
+          roam: false,
+          itemStyle: {
+            normal: {
+              areaColor: '#FFFFFF',
+              borderColor: '#666666',
+            },
+            emphasis: {
+              areaColor: '#0099CC',
+            }
+          }
+        },
+        series: [
+          {
+            type: 'map',
+            map: mapName,
+            geoIndex: 0,
+            animation: false,
+            data: dataop
+          },
+        ]
+      };
+      myChart2.setOption(option);
+
+      titlename = '奶业供需比：2020';
+      dataop = mapdata3;
+      var option = {
+        title: {
+          text: titlename,
+          x: 'center',
+          textStyle: {
+            fontSize: 12
+          },
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (params) {
+            var toolTiphtml = ''
+            if (isNaN(params.value)) {
+              toolTiphtml = params.name + ': 0万吨'
+            } else {
+              toolTiphtml = params.name + ': ' + params.value + '万吨'
+            }
+
+            return toolTiphtml;
+          }
+        },
+        toolbox: {
+          show: true,
+          feature: {
+            saveAsImage: {}
+          }
+        },
+        visualMap: {
+          show: true,
+          left: 'left',
+          top: 'bottom',
+          min: 0,
+          max: 20,
+          itemWidth: 10,
+          itemHeight:50,
+          padding:[0,0,50,0],
+          inRange: {
+            color: ["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#9E0142", "#464646"]
+
+          },
+          text: ['high', 'low'],
+          realtime: false,
+          calculable: true,
+          textStyle: {
+            color: '#000000'
+          }
+        },
+        geo: {
+          show: true,
+          map: mapName,
+          label: {
+            normal: {
+              show: false,
+              fontSize: 12,
+            },
+            emphasis: {
+              show: false,
+            }
+          },
+          roam: false,
+          itemStyle: {
+            normal: {
+              areaColor: '#FFFFFF',
+              borderColor: '#666666',
+            },
+            emphasis: {
+              areaColor: '#0099CC',
+            }
+          }
+        },
+        series: [
+          {
+            type: 'map',
+            map: mapName,
+            geoIndex: 0,
+            animation: false,
+            data: dataop
+          },
+        ]
+      };
+      myChart3.setOption(option);
+
+      titlename = '冷热点分析：2018';
+      dataop = mapdata4;
+      var option = {
+        title: {
+          text: titlename,
+          x: 'center',
+          textStyle: {
+            fontSize: 12
+          },
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (params) {
+            var toolTiphtml = ''
+            if (params.value==0) {
+              toolTiphtml = params.name + '不显著'
+            } else if(params.value==3) 
+            {
+              toolTiphtml = params.name + '为热点(99%置信度)' 
+            }  else if(params.value==2) 
+            {
+              toolTiphtml = params.name + '为热点(95%置信度)' 
+            }  else if(params.value==1) 
+            {
+              toolTiphtml = params.name + '为热点(90%置信度)' 
+            }  else if(params.value==-1) 
+            {
+              toolTiphtml = params.name + '为冷点(90%置信度)' 
+            }  else if(params.value==-2) 
+            {
+              toolTiphtml = params.name + '为冷点(95%置信度)' 
+            }  else if(params.value==-3) 
+            {
+              toolTiphtml = params.name + '为冷点(99%置信度)' 
+            }
+
+            return toolTiphtml;
+          }
+        },
+        toolbox: {
+          show: true,
+          feature: {
+            saveAsImage: {}
+          }
+        },
+        visualMap: {
+          show: false,
+          left: 'left',
+          top: 'bottom',
+          // min: 0,
+          // max: 270,
+          itemWidth: 10,
+          itemHeight: 6,
+          padding:[0,0,50,0],
+          seriesIndex: [0],
+          type: 'piecewise',
+          pieces: [
+          { min: -3,max: -3, color:colorgroup[1]},
+          { min: -2, max: -2,color: colorgroup[2]},
+            { min: -1,max: -1, color: colorgroup[3] },
+             { min: 0, max: 0, color: "#F7F7F2" },
+            { min: 1, max: 1, color: colorgroup[7] },
+            { min: 2, max: 2, color: colorgroup[8] },
+            { min: 3, max: 3, color: colorgroup[9] },
+          ],
+          textStyle: {
+            color: '#000000'
+          }
+        },
+        geo: {
+          show: true,
+          map: mapName,
+          label: {
+            normal: {
+              show: false,
+              fontSize: 12,
+            },
+            emphasis: {
+              show: false,
+            }
+          },
+          roam: false,
+          itemStyle: {
+            normal: {
+              areaColor: '#FFFFFF',
+              borderColor: '#666666',
+            },
+            emphasis: {
+              areaColor: '#0099CC',
+            }
+          }
+        },
+        series: [
+          {
+            type: 'map',
+            map: mapName,
+            geoIndex: 0,
+            animation: false,
+            data: dataop
+          },
+        ]
+      };
+      myChart4.setOption(option);
+
+      titlename = '冷热点分析：2019';
+      dataop = mapdata5;
+      var option = {
+        title: {
+          text: titlename,
+          x: 'center',
+          textStyle: {
+            fontSize: 12
+          },
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (params) {
+            var toolTiphtml = ''
+            if (params.value==0) {
+              toolTiphtml = params.name + '不显著'
+            } else if(params.value==3) 
+            {
+              toolTiphtml = params.name + '为热点(99%置信度)' 
+            }  else if(params.value==2) 
+            {
+              toolTiphtml = params.name + '为热点(95%置信度)' 
+            }  else if(params.value==1) 
+            {
+              toolTiphtml = params.name + '为热点(90%置信度)' 
+            }  else if(params.value==-1) 
+            {
+              toolTiphtml = params.name + '为冷点(90%置信度)' 
+            }  else if(params.value==-2) 
+            {
+              toolTiphtml = params.name + '为冷点(95%置信度)' 
+            }  else if(params.value==-3) 
+            {
+              toolTiphtml = params.name + '为冷点(99%置信度)' 
+            }
+
+            return toolTiphtml;
+          }
+        },
+        toolbox: {
+          show: true,
+          feature: {
+            saveAsImage: {}
+          }
+        },
+        visualMap: {
+          show: false,
+          left: 'left',
+          top: 'bottom',
+          // min: 0,
+          // max: 270,
+          itemWidth: 10,
+          itemHeight: 6,
+          padding:[0,0,50,0],
+          seriesIndex: [0],
+          type: 'piecewise',
+          pieces: [
+          { min: -3,max: -3, color:colorgroup[1]},
+          { min: -2, max: -2,color: colorgroup[2]},
+            { min: -1,max: -1, color: colorgroup[3] },
+             { min: 0, max: 0, color: "#F7F7F2"  },
+            { min: 1, max: 1, color: colorgroup[7] },
+            { min: 2, max: 2, color: colorgroup[8] },
+            { min: 3, max: 3, color: colorgroup[9] },
+          ],
+          textStyle: {
+            color: '#000000'
+          }
+        },
+        geo: {
+          show: true,
+          map: mapName,
+          label: {
+            normal: {
+              show: false,
+              fontSize: 12,
+            },
+            emphasis: {
+              show: false,
+            }
+          },
+          roam: false,
+          itemStyle: {
+            normal: {
+              areaColor: '#FFFFFF',
+              borderColor: '#666666',
+            },
+            emphasis: {
+              areaColor: '#0099CC',
+            }
+          }
+        },
+        series: [
+          {
+            type: 'map',
+            map: mapName,
+            geoIndex: 0,
+            animation: false,
+            data: dataop
+          },
+        ]
+      };
+      myChart5.setOption(option);
+
+      titlename = '冷热点分析：2020';
+      dataop = mapdata6;
+      var option = {
+        title: {
+          text: titlename,
+          x: 'center',
+          textStyle: {
+            fontSize: 12
+          },
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (params) {
+            var toolTiphtml = ''
+            if (params.value==0) {
+              toolTiphtml = params.name + '不显著'
+            } else if(params.value==3) 
+            {
+              toolTiphtml = params.name + '为热点(99%置信度)' 
+            }  else if(params.value==2) 
+            {
+              toolTiphtml = params.name + '为热点(95%置信度)' 
+            }  else if(params.value==1) 
+            {
+              toolTiphtml = params.name + '为热点(90%置信度)' 
+            }  else if(params.value==-1) 
+            {
+              toolTiphtml = params.name + '为冷点(90%置信度)' 
+            }  else if(params.value==-2) 
+            {
+              toolTiphtml = params.name + '为冷点(95%置信度)' 
+            }  else if(params.value==-3) 
+            {
+              toolTiphtml = params.name + '为冷点(99%置信度)' 
+            }
+
+            return toolTiphtml;
+          }
+        },
+        toolbox: {
+          show: true,
+          feature: {
+            saveAsImage: {}
+          }
+        },
+        visualMap: {
+          show: false,
+          left: 'left',
+          top: 'bottom',
+          // min: 0,
+          // max: 270,
+          itemWidth: 10,
+          itemHeight: 6,
+          padding:[0,0,50,0],
+          seriesIndex: [0],
+          type: 'piecewise',
+          pieces: [
+          { min: -3,max: -3, color:colorgroup[1]},
+          { min: -2, max: -2,color: colorgroup[2]},
+            { min: -1,max: -1, color: colorgroup[3] },
+             { min: 0, max: 0, color: "#F7F7F2" },
+            { min: 1, max: 1, color: colorgroup[7] },
+            { min: 2, max: 2, color: colorgroup[8] },
+            { min: 3, max: 3, color: colorgroup[9] },
+          ],
+          textStyle: {
+            color: '#000000'
+          }
+        },
+        geo: {
+          show: true,
+          map: mapName,
+          label: {
+            normal: {
+              show: false,
+              fontSize: 12,
+            },
+            emphasis: {
+              show: false,
+            }
+          },
+          roam: false,
+          itemStyle: {
+            normal: {
+              areaColor: '#FFFFFF',
+              borderColor: '#666666',
+            },
+            emphasis: {
+              areaColor: '#0099CC',
+            }
+          }
+        },
+        series: [
+          {
+            type: 'map',
+            map: mapName,
+            geoIndex: 0,
+            animation: false,
+            data: dataop
+          },
+        ]
+      };
+      myChart6.setOption(option);
+    });
+
+    if (option && typeof option === 'object') {
+      myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+  </script>
+</body>
+
+</html>

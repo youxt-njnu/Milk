@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>乳企品牌分布</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
+
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css' rel='stylesheet' />
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/swiper-bundle.min.css" rel="stylesheet">
+  <link href="css/glightbox.min.css" rel="stylesheet">
+  <link href="css/aos.css" rel="stylesheet">
+
+
+  <!-- Template Main CSS Files -->
+  <link href="css/indexmain.css" rel="stylesheet">
+  <link href="css/indexvariables.css" rel="stylesheet">
+
+  <style>
+    @charset "utf-8";
+
+    body {
+      background-color: rgb(242, 242, 242);
+      margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      position: absolute;
+      top: 10%;
+      left: 0;
+      /* margin-top: 10%; */
+      /* margin-left: 0; */
+      width: 100%;
+      height: 90%;
+    }
+
+    #context {
+      transition: margin-left .5s;
+      /*主体内容延迟0.5s整体y右移动*/
+      padding: 16px;
+    }
+
+    /*当文档高度小于450px时，改变侧栏的padding属性和字体大小*/
+    @media screen and (max-height: 450px) {
+      .sidenav {
+        padding-top: 15px;
+      }
+
+      .sidenav a {
+        font-size: 18px;
+      }
+    }
+
+    .map-overlay {
+      font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+      position: absolute;
+      width: 30%;
+      top: 60px;
+      left: 8px;
+      padding: 10px;
+    }
+
+    .map-overlay .map-overlay-inner {
+      background-color: #fff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      border-radius: 3px;
+      height: 100px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .map-overlay-inner fieldset {
+      border: none;
+      padding: 0;
+      margin: 0 0 10px;
+    }
+    #legendsColor {
+      top: 100px;
+      padding: 20px;
+      line-height: 22px;
+      height: 185px;
+      margin-bottom: 40px;
+      width: 240px;
+    }
+
+    .legend-key {
+      display: inline-block;
+      border-radius: 20%;
+      width: 17px;
+      height: 12px;
+      margin-right: 10px;
+      margin-left: 8px;
+    }
+
+    /* .map-overlay {
+      font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+      position: absolute;
+      width: 25%;
+      top: 0;
+      left: 0;
+      padding: 10px;
+    }
+
+    .map-overlay .map-overlay-inner {
+      background-color: #fff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.20);
+      border-radius: 3px;
+      padding: 10px;
+      margin-bottom: 10px;
+    } */
+
+    .map-overlay h2 {
+      line-height: 24px;
+      display: block;
+      margin: 0 0 10px;
+    }
+
+    .map-overlay .legend .bar {
+      height: 10px;
+      width: 100%;
+      background: linear-gradient(to right, #FCA107, #7F3121);
+    }
+
+    .map-overlay input {
+      background-color: transparent;
+      display: inline-block;
+      width: 100%;
+      position: relative;
+      margin: 0;
+      cursor: ew-resize;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ======= Header ======= -->
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+
+      <a href="index.html" class="logo d-flex align-items-center">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+        <!-- <img src="assets/img/logo.png" alt=""> -->
+        <h1>MILK</h1>
+      </a>
+
+      <nav id="navbar" class="navbar">
+        <ul>
+          <li><a href="p1.html">故事地图</a></li>
+          <li><a href="factoryheat.html">工厂分布</a></li>
+          <li><a href="p3.html">品牌发展</a></li>
+          <li><a href="gxpage.html">供需分析</a></li>
+        </ul>
+      </nav><!-- .navbar -->
+
+      <div class="position-relative">
+        <a href="charts/10组-开题.html">电子地图课程第十组</a>
+
+        <a href="#" class="mx-2 js-search-open"><span class="bi-search"></span></a>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+
+        <!-- ======= Search Form ======= -->
+        <div class="search-form-wrap js-search-form-wrap">
+          <form action="search-result.html" class="search-form">
+            <!-- <span class="icon bi-search"></span> -->
+            <!-- <input type="text" placeholder="Search" class="form-control"> -->
+            <button class="btn js-search-close"><span class="icon bar-chart-line-fill"></span></button>
+          </form>
+        </div><!-- End Search Form -->
+
+      </div>
+
+    </div>
+
+  </header><!-- End Header -->
+
+  <main id="main">
+    <div id="context">
+      <div id="map">
+      </div>
+      <div class='map-overlay top'>
+        <div class='map-overlay-inner'>
+          <h2>近5年的乳企发展状况</h2>
+          <label id='month'></label>
+          <input id='slider' type='range' min='0' max='4' step='1' value='0' />
+        </div>
+        <div class='map-overlay' id='legendsColor'>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Vendor JS Files -->
+  <!-- <script src="js/bootstrap.bundle.min.js"></script> -->
+  <!-- <script src="js/swiper-bundle.min.js"></script> -->
+  <!-- <script src="js/glightbox.min.js"></script> -->
+  <!-- <script src="js/aos.js"></script> -->
+  <!-- <script src="assets/vendor/php-email-form/validate.js"></script> -->
+
+  <!-- Template Main JS File -->
+  <!-- <script src="js/indexmain.js"></script> -->
+  <!-- <script src="js/jquery.min.js"></script> -->
+
+  <script src="dat/data.js"></script>
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoibGlua2xpbmsiLCJhIjoiY2t5azNveG05MnRwdTJ4bzhxM2JmNGg3aCJ9.giuzL5T9qkSSl9EWMUK9dg';
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/linklink/cl4e74qd4000114no7uwxps3r',
+      center: [116.2606, 33.7927],
+      zoom: 4.5,
+      pitch: 45
+    });
+    var nav = new mapboxgl.NavigationControl(
+      {
+        //是否显示指南针，默认为true
+        "showCompass": true,
+        //是否显示缩放按钮，默认为true
+        "showZoom": true
+      }
+    );
+    map.addControl(nav, 'top-right');
+    var months = [
+      '2017',
+      '2018',
+      '2019',
+      '2020',
+      '2021'
+    ];
+
+    //滑块筛选数据
+    function filterBy(month) {
+      var filters = ['==', 'month', months[month]];
+      map.setFilter('entity_layer', filters);
+      document.getElementById('month').textContent = months[month];
+    }
+
+    //点数据转换为面数据
+    function createSquaredByPoint(properties, offset) {
+      var smx = properties.smx;
+      var smy = properties.smy;
+      var offset_int = parseFloat(offset);
+      return [[smx, smy], [smx, smy + offset_int], [smx - offset_int, smy + offset_int], [smx - offset_int, smy], [smx, smy]];
+    }
+    function getGeometry(feature, weight, breadth) {
+      feature.features.forEach(item => {
+        if (item.geometry && item.geometry.coordinates) {
+          item.geometry.coordinates[0] = createSquaredByPoint(item.properties, breadth);
+          item.properties.height = item.properties.height * weight;
+        } else {
+          console.log("item.geometry.coordinates 不存在");
+        }
+      })
+    }
+    var layers = ['营业总收入（亿元）', '净利润（亿元）', '营业总收入增长率（%）', '净利润增长率（%）'];
+    var colors = ['#FFF143', '#FFA631', '#C9DD22', '#395fdb'];
+    map.on('load', function () {
+      for (i = 0; i < layers.length; i++) {
+        var layer = layers[i];
+        var color = colors[i];
+        var item = document.createElement('div');
+        var key = document.createElement('span');
+        key.className = 'legend-key';
+        key.style.backgroundColor = color;
+        var value = document.createElement('span');
+        value.innerHTML = layer;
+        item.appendChild(key);
+        item.appendChild(value);
+        legendsColor.appendChild(item);
+      }
+    });
+
+    function addLayer(geometry, BoxMap) {
+      getGeometry(geometry, 5000, 0.2);
+
+      if (BoxMap.getLayer('entity_layer')) {
+        BoxMap.removeLayer('entity_layer');
+      };
+      if (BoxMap.getLayer('entity_borders')) {
+        BoxMap.removeLayer('entity_borders');
+      };
+      /*
+      geometry.features.forEach(item => {
+          let he = 0;
+          he = item.properties.height;
+          //属性数据
+          item.properties.id = parseInt(item.properties.id);
+          item.properties.height = parseInt(he);
+      });
+      */
+      if (BoxMap.getSource("states")) {
+        BoxMap.getSource("states").setData(feature)
+      } else {
+        BoxMap.addSource("states", {
+          "type": "geojson",
+          "data": geometry
+        });
+      }
+      BoxMap.addLayer({
+        'id': 'entity_layer',
+        'source': 'states',
+        'type': 'fill-extrusion',
+        'layout': { 'visibility': 'visible' },
+        'paint': {
+          //设置主体默认颜色
+          'fill-extrusion-color': [
+            "match",
+            ["get", "type"],
+            0, colors[0],
+            1, colors[1],
+            2, colors[2],
+            3, colors[3],
+            '#FFF'
+            //分类颜色设置（必须按顺序）
+          ],
+          'fill-extrusion-height': [
+            "interpolate", ["linear"], ["zoom"], 4, 0, 14.05, ["get", "height"]
+          ],
+          'fill-extrusion-opacity': .8         //透明度
+        }
+      });
+
+      filterBy(0);
+
+      document.getElementById('slider').addEventListener('input', function (e) {
+        var month = parseInt(e.target.value, 10);
+        filterBy(month);
+      });
+
+      //添加一个鼠标点击变色的同数据图层（这个默认隐藏）
+      BoxMap.addLayer({
+        'id': 'entity_borders',
+        'source': 'states',
+        'type': 'fill-extrusion',
+        'layout': {},
+        'minzoom': 2,         //最小可见级别
+        'paint': {
+          'fill-extrusion-color': '#b8c9dd',
+          'fill-extrusion-height': ['get', 'height'],
+          'fill-extrusion-opacity': 0.7       //图层透明度
+        },
+        "filter": ["in", "id", ""]
+      });
+      let popups = new mapboxgl.Popup({ closeButton: false });
+      BoxMap.on("mousemove", "entity_layer", function (e) {
+        BoxMap.getCanvas().style.cursor = 'pointer';
+        let feature = e.features[0];
+
+        let relatedFeatures = BoxMap.querySourceFeatures('states', {
+          filter: ['in', 'id', feature.properties.id]
+        });
+
+        let filter = relatedFeatures.reduce(function (memo, feature) {
+          memo.push(feature.properties.id);
+          return memo;
+        }, ['in', 'id']);
+
+        BoxMap.setFilter("entity_borders", filter);
+
+        //气泡信息（自定义html样式）
+        let html =
+          "<h6> 企业：<a>" + feature.properties.name + "</a> </h6>" +
+          "<h6> 上市时间：<a>" + feature.properties.market + "</a></h6>" +
+          "<h6>" + datatype[feature.properties.type] + ":<a>" + feature.properties.value + datadanwei[feature.properties.type] + "</a></h6>";
+
+        popups.setLngLat([feature.properties.smx, feature.properties.smy])
+          .setHTML(html)
+          .addTo(BoxMap);
+      });
+      BoxMap.on("mouseleave", "entity_layer", function () {
+        BoxMap.getCanvas().style.cursor = '';
+        BoxMap.setFilter('entity_borders', ['in', 'id', '']);
+        popups.remove();
+      });
+    };
+
+    function styleLoad() {
+      setTimeout(function () {
+        if (map.isStyleLoaded()) {
+          addLayer(geometry, map);
+        } else {
+          console.log("wait...");
+          styleLoad();
+        }
+      }, 1000)
+    }
+  </script>
+  <script type="text/javascript">
+    styleLoad();
+  </script>
+
+</body>
+
+</html>
